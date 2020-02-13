@@ -33,3 +33,11 @@ CHANGELOG ONLY RECORDS CHANGES MADE POST 1/3/2020
     Other:
         Added debug area to battle
         Improved readablilty and practicality of code
+2/12/2020:
+    Functions:
+        Added speed_factor to text_scroll
+        Fixed voice files in text_scroll
+    Other:
+        Uploaded text_game to github (https://github.com/dirkwind/text-game)
+        Added README.md
+        Added comments explaining most files' purpose
