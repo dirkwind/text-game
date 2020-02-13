@@ -6,12 +6,8 @@ import random
 import sys
 import time
 import shelve # used for saving data
-
+import progbar.progbar as progbar # quicktime event visualizer
 import simpleaudio as sa
-
-sys.path.append('../')
-
-import progbar # quicktime event visualizer
 
 class Item(object):
 
