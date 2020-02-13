@@ -1,3 +1,5 @@
+# this is where the story is written
+
 from systems import *
 from aux_functions import *
 from playsound import *

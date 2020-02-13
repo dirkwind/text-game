@@ -1,3 +1,5 @@
+# this is where special item functions go
+
 import json
 import math
 import msvcrt
@@ -8,6 +10,7 @@ import time
 from systems import *
 
 def ana_bomb(params):
+    '''Sets targeted entity's speed to 0 unless its speed is <= 0. params=[target]'''
     entity = params[0]
     if entity["speed"] > 0:
         entity["speed"] = 0
@@ -42,7 +45,7 @@ def vampire(params):
     '''Life steal. params=[target, user, divisor]
     divisor determines lifesteal (health_increment = damage // divisor)
     '''
-    params = [player if par == "$player" else par for par in params]
+    params = [player if par == "$player" else par for par in params] # adding player object to params if needed
     target = params[0]
     user = params[1]
     divisor = params[2]

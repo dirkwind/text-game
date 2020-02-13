@@ -1,3 +1,5 @@
+# all of the main required for the game
+
 import math
 import msvcrt # used solely in quicktime events
 import random

@@ -1,3 +1,7 @@
+# an archive of scrapped enemys
+# NOTE: these are likely not up to date with the most recent syntax for enemies
+#   warning: these enemies are probably a bit cringey
+
 grunt = {
     'name': 'Tobu',
     'intro': 'Tobu waddles in! He doesn\'t look like he wants to fight...', # intro message
