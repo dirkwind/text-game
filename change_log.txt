@@ -1,0 +1,35 @@
+CHANGELOG ONLY RECORDS CHANGES MADE POST 1/3/2020
+
+1/4/2020:
+    Enemy items:
+        Added Enemy_Item Class to systems.py:
+            # still need to add 'special' compatability
+            # works almost the same as player's item usage
+        Added 'inventory' key to enemy dict template in story.py
+            # needs to be added to current enemies
+    Other:
+        created change_log.txt
+1/25/2020:
+    Enemy Items:
+        Completed Enemy_Item Class:
+            # added 'special' compatability
+        Added Enemy_Item functionality to battle in systems.py:
+    Functions:
+        Added configure_params function to systems.py:
+            # configures params for 'special' functions
+    Other:
+        Added more comments
+        Moved save files to saves
+2/7/2020:
+    Items:
+        Added universal Item class:
+            # standardizes __init__ for Enemy_Item and Player_Item
+        Added Player_Item class:
+            # works almost identically as Enemy_Item
+            # tested extensively; works perfectly
+    Functions:
+        Changed add_item to be compatible with Player_Item
+        Modified battle to work with new Player_Item class
+    Other:
+        Added debug area to battle
+        Improved readablilty and practicality of code
