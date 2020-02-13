@@ -344,6 +344,8 @@ def configure_params(params, enemy, turns, silent=False):
             updated_params.append(enemy)
         elif par == '$turns':
             updated_params.append(turns)
+        elif par == '$player':
+            updated_params.append(player)
         elif par == '$silent':
             updated_params.append(silent)
         else:

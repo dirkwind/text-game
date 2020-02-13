@@ -19,19 +19,35 @@ def ana_bomb(params):
         text_scroll(f'\n{entity["name"]} was too slow for the anaesthesia to take effect!\n')
 
 def turn_based_damage(params):
-    '''Attack that bases its damage on the current turn. params=[target, '$turns', damage_factor, dodgable]'''
+    '''Attack that bases its damage on the current turn. params=[target, user, '$turns', damage_factor, dodgable]'''
+    #NOTE: does not work when enemy is user enemy use
     target = params[0]
-    turn_number = params[1]
-    damage_factor = params[2]
-    dodgable = params[3]
-    chance_num = random.randint(1, 100)
-    if chance_num >= int((target['speed'] / 20) * 100) or not dodgable:
-        damage = int((player['attack'] * turn_number * damage_factor)) - target['defense']
-        if damage < 0: damage == 0
-        target['health'] -= damage
-        text_scroll(f'\n{target["name"]} took {damage} damage! They are now at {target["health"]} HP!\n')
+    user = params[1]
+    turn_number = params[2]
+    damage_factor = params[3]
+    dodgable = params[4]
+
+    if target is player and dodgable:
+        text_scroll("\nGet ready to dodge!\n")
+        time.sleep(1)
+        chance_num = int(100 - ((quicktime_bar('f', user['speed']) / 30) * 100))
+        speed = user['speed']
     else:
-        text_scroll(f'\n{target["name"]} dodged the attack!\n')
+        chance_num = random.randint(1, 10000)/100
+        speed = target['speed']
+
+    if speed == 20:
+        percent = 100
+    else:
+        percent = -100 * (((speed/20)-1)**2) + 100
+
+    if chance_num <= percent or not dodgable:
+        damage = int((user['attack'] * turn_number * damage_factor)) - target['defense']
+        if damage <= 0: damage = 0
+        target['health'] -= damage
+        text_scroll(f'\n{"You" if target is player else target["name"]} took {damage} damage! {"You" if target is player else "They"} are now at {target["health"]} HP!\n')
+    else:
+        text_scroll(f'\n{"You" if target is player else target["name"]} dodged the attack!\n')
 
 
 def change_turns(params):

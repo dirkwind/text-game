@@ -53,16 +53,16 @@ dog = {
     'checkable': [True, "name can't be checked."], # whether or not player can check enemy's stats
     'attack': 1,
     'defense': 10,
-    'speed': 3, # 4+ = no Great Hits, 8+ = no Good Hits, 13+ = no Fair Hits, 20+ = 100% immune to damage items, all keep Critical (nums in b/w included)
+    'speed': 4, # 4+ = no Great Hits, 8+ = no Good Hits, 13+ = no Fair Hits, 20+ = 100% immune to damage items, all keep Critical (nums in b/w included)
     'health': 20,
     'max_health': 20,
     'give_up': [0, 'Blarg... You Win!'],
     'can_flee': False,
     'bonus_xp': random.randint(1,40), # extra xp for the player if they defeat this enemy
     'inventory': [ # Enemy_Item(self, name, purpose='heal, stat_bonus, damage', value, uses, usage_chance, dodgable=None, turns=0) 
-
+        Enemy_Item('Goblin Engergy Jab', 'special', None, 3, False, special_func=turn_based_damage, special_params=['$player', '$enemy', '$turns', 1, True])
     ],
-    'use_item_chance': 0, # between and including 1 through 100; percentage chance (w/ precision of 3 decimal places) that the enemy will use an item
+    'use_item_chance': 20, # between and including 1 through 100; percentage chance (w/ precision of 3 decimal places) that the enemy will use an item
     'responses': { # use (['', ''], 0, stat, value) to change a stat's value when an act is performed
         'threaten': [
             (['"I destroy your hentai!"', 'Gremlin tenses up'], 20, 'defense', 2),
@@ -118,4 +118,4 @@ doge = {
 #add_item(Player_Item('Sketchy Throwing Knife', 'special', None, 3, special_func=vampire, special_params=['$enemy', '$player', 3]))
 #add_item(Player_Item('Charge Attack', 'special', None, 2, special_func=turn_based_damage, special_params=['$enemy', '$turns', 0.45, True]))
 
-battle(doge)
+battle(dog)
