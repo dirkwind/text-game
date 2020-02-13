@@ -184,9 +184,11 @@ class Player_Item(Item):
             else:
                 self.special_func(configure_params(self.special_params, enemy, current_turn))
 
-def text_scroll(text, period=0.25, comma=0.15, normal=0.03, space=None, voice_file=None):
+def text_scroll(text, period=0.25, comma=0.15, normal=0.03, space=None, voice_file=None, speed_factor=1):
     if voice_file is None:
         wave_obj = sa.WaveObject.from_wave_file("sounds/voice_sans.wav")
+    else:
+        wave_obj = sa.WaveObject.from_wave_file(voice_file)
     if space == None:
         space = normal
     for letter in text:
@@ -195,13 +197,13 @@ def text_scroll(text, period=0.25, comma=0.15, normal=0.03, space=None, voice_fi
         if voice_file is not None:
             wave_obj.play()
         if letter in set('.?!'):
-            time.sleep(period)
+            time.sleep(period*speed_factor)
         elif letter in set(',;:'):
-            time.sleep(comma)
+            time.sleep(comma*speed_factor)
         elif letter == ' ':
-            time.sleep(space)
+            time.sleep(space*speed_factor)
         else:
-            time.sleep(normal)
+            time.sleep(normal*speed_factor)
         
 
 def quicktime_bar(key, speed_factor=0):
