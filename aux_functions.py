@@ -20,7 +20,6 @@ def ana_bomb(params):
 
 def turn_based_damage(params):
     '''Attack that bases its damage on the current turn. params=[target, user, '$turns', damage_factor, dodgable]'''
-    #NOTE: does not work when enemy is user enemy use
     target = params[0]
     user = params[1]
     turn_number = params[2]

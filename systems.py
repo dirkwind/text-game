@@ -479,11 +479,11 @@ def battle(enemy):
                     time.sleep(1)
                     input('Press enter to continue...')
                 else:
-                    text_scroll(f'\n{enemy["checkable"][1]}\n')
+                    text_scroll(f'\n{enemy["checkable"][1]}\n') # prints reason why enemy can't be checked
             else:
                 turns -= 1
                 attack = False
-            if len(random_response) >= 3:
+            if len(random_response) >= 3: # changes a stat if there are enough parameters for it
                 stat_change(enemy, random_response[2], random_response[3])
             turns += 1
         
@@ -497,6 +497,7 @@ def battle(enemy):
                 return None
             else:
                 text_scroll(f'\nYou can\'t run away from {enemy_name}...\n')
+
         else:
             text_scroll('\nThat was not a choice.\n')
             attack = False
@@ -529,6 +530,7 @@ def battle(enemy):
 
                     if item.purpose == 'heal' and enemy['health'] >= enemy["max_health"]:
                         if len(enemy['inventory']) == 1:
+                            # attack the player if the enemy only has a healing item and is at full health
                             choosing_item = False
                             player_attacked(enemy, bonus_def)
                         else:
