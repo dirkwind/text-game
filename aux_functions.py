@@ -9,22 +9,18 @@ import time
 
 from systems import *
 
-def ana_bomb(params):
-    '''Sets targeted entity's speed to 0 unless its speed is <= 0. params=[target]'''
-    entity = params[0]
-    if entity["speed"] > 0:
-        entity["speed"] = 0
+def ana_bomb(target: dict):
+    '''Sets targeted entity's speed to 0 unless its speed is <= 0. params=[target]
+    NOTE: cannot be used on players because they have no 'speed' value
+    '''
+    if target["speed"] > 0:
+        target["speed"] = 0
         text_scroll(f'\n{entity["name"]} was anaesthetized! Their SPEED is now 0!\n')
     else:
         text_scroll(f'\n{entity["name"]} was too slow for the anaesthesia to take effect!\n')
 
-def turn_based_damage(params):
+def turn_based_damage(target: dict, user: dict, turn_number: int, damage_factor: float, dodgable: bool):
     '''Attack that bases its damage on the current turn. params=[target, user, '$turns', damage_factor, dodgable]'''
-    target = params[0]
-    user = params[1]
-    turn_number = params[2]
-    damage_factor = params[3]
-    dodgable = params[4]
 
     if target is player and dodgable:
         text_scroll("\nGet ready to dodge!\n")
@@ -49,21 +45,15 @@ def turn_based_damage(params):
         text_scroll(f'\n{"You" if target is player else target["name"]} dodged the attack!\n')
 
 
-def change_turns(params):
+def change_turns(turn_number: int, change_amount: int, clarifier="&turns"):
     '''Changes the value of turns params=['$turns', change, '&turns']'''
-    value = params[0]
-    change = params[1]
-    text_scroll(f'\nActive effects will now last for {-change} more turns!\n')
-    return value + change
+    text_scroll(f'\nActive effects will now last for {-change_amount} more turns!\n')
+    return turn_number + change_amount
 
-def vampire(params):
+def vampire(target: dict, user: dict, divisor: float):
     '''Life steal. params=[target, user, divisor]
     divisor determines lifesteal (health_increment = damage // divisor)
     '''
-    params = [player if par == "$player" else par for par in params] # adding player object to params if needed
-    target = params[0]
-    user = params[1]
-    divisor = params[2]
     damage = random.randint(int(user['attack'] * 0.8), int(user['attack'] * 0.9)) - target['defense']
     if damage <= 0:
         text_scroll('\nThe attack did 0 damage!\n')

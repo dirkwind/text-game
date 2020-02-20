@@ -121,7 +121,7 @@ class Enemy_Item(Item):
         
         elif self.purpose == 'special':
             # returned in case special_func returns a value
-            return self.special_func(configure_params(self.special_params, enemy, current_turn, self.silent))
+            return self.special_func(*configure_params(self.special_params, enemy, current_turn, self.silent))
         
 class Player_Item(Item):
 
@@ -178,11 +178,7 @@ class Player_Item(Item):
                 if not self.silent: text_scroll(f'\n{enemy["name"]} dodged the {self.name.upper()}!\n')
                 
         elif self.purpose == 'special':
-            
-            if '&turns' in self.special_params:
-                return self.special_func(configure_params(self.special_params, enemy, current_turn))
-            else:
-                self.special_func(configure_params(self.special_params, enemy, current_turn))
+            return self.special_func(*configure_params(self.special_params, enemy, current_turn))
 
 def text_scroll(text, period=0.25, comma=0.15, normal=0.03, space=None, voice_file=None, speed_factor=1):
     if voice_file is None:
