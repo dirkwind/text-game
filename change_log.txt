@@ -42,3 +42,7 @@ CHANGELOG ONLY RECORDS CHANGES MADE POST 1/3/2020
         Uploaded text_game to github (https://github.com/dirkwind/text-game)
         Added README.md
         Added comments explaining most files' purpose
+2/19/2020:
+    Functions:
+        Changed the way special functions are called
+            # now uses function(*[param_list]) rather than function([param_list])
