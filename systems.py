@@ -208,7 +208,8 @@ def text_scroll(text: str, period=0.25, comma=0.15, normal=0.03, space=None, voi
         else:
             time.sleep(normal*speed_factor)
 
-def quicktime_bar(key, speed_factor=0):
+def quicktime_bar(key='f', speed_factor=0):
+    '''Starts a quicktime bar event. Returns a value between 0 and 30.'''
     percent = 0
     total = 60
     attack_bar.startProgress(f'Press {key.upper()}:')
@@ -223,7 +224,10 @@ def quicktime_bar(key, speed_factor=0):
     attack_bar.pauseProgress()
     return abs(percent - 30)
 
-def player_attacked(enemy, bonus_def):
+def player_attacked(enemy: dict, bonus_def):
+    '''Prompts the player to try and dodge the enemy's attack.
+    enemy is the enemy dict and bonus_def is extra def the player has
+    '''
     text_scroll("\nGet ready to dodge!\n")
     base_attack = enemy['attack']
     defense = player['defense']
@@ -352,7 +356,7 @@ def stat_change(entity: dict, stat: str, value: int, silent=False):
             text_scroll(f'\n{entity["name"]}\'s {stat.upper()} increased by {value}!\n')
 
 def configure_params(params, enemy, turns, silent=False):
-    # configures parameters for enemy and player items
+    '''configures parameters for enemy and player items'''
     updated_params = []
     for par in params:
         if par == '$enemy':
@@ -369,7 +373,8 @@ def configure_params(params, enemy, turns, silent=False):
 
 # ---------------------------------------- BATTLE ----------------------------------------
 
-def battle(enemy):
+def battle(enemy: dict):
+    '''Initiates a battle between player and the provided enemy.'''
     in_battle = True
     responses = enemy['responses']
     response_keys = list(enemy['responses'].keys())
@@ -592,6 +597,7 @@ player = {
 }
 
 def save(stage):
+    '''Saves player data and provided stage into a shelve file.'''
     save_file = shelve.open('saves/save.db')
     save_file['player_object'] = player
     save_file['stage'] = stage
@@ -599,18 +605,20 @@ def save(stage):
     
 
 def get_save():
+    '''Gets the data for player and stage from a shelve file.'''
     global stage, player
     with open('saves/save.db.dir', 'r') as sv:
         if len(sv.readlines()) > 1:
             save_file = shelve.open('saves/save.db')
             stage = int(save_file['stage'])
             player = dict(save_file['player_object'])
-            save_file.close
+            save_file.close()
         else:
             save(0)
             get_save()
 
 def erase_save():
+    '''Deletes saved data'''
     with open('saves/save.db.dir', 'w') as file1:
         file1.write('')
     with open('saves/save.db.dat', 'w') as data:
