@@ -180,17 +180,24 @@ class Player_Item(Item):
         elif self.purpose == 'special':
             return self.special_func(*configure_params(self.special_params, enemy, current_turn))
 
-def text_scroll(text, period=0.25, comma=0.15, normal=0.03, space=None, voice_file=None, speed_factor=1):
-    if voice_file is None:
-        wave_obj = sa.WaveObject.from_wave_file("sounds/voice_sans.wav")
-    else:
+def text_scroll(text: str, period=0.25, comma=0.15, normal=0.03, space=None, voice_file=None, speed_factor=1):
+    '''Progressively prints text to the screen instead of printing it all at once.
+    \n\n* The float values of period, comma, normal, and space is the duration in seconds the program pauses after printing a character.
+    \n* period is any ending punctuation (.?!), comma is any pausing punctuation (,;:), space is ' ', and normal is every other character.
+    \n* If space is None then space will be the same value as normal
+    \n* voice_file is a wav file that will play when a character is printed
+    \n* speedfactor affects the duration of all characters
+    '''
+    if voice_file is not None:
+        # creates a WaveObject if a voice_file was provided
         wave_obj = sa.WaveObject.from_wave_file(voice_file)
-    if space == None:
+    if space is None:
         space = normal
     for letter in text:
         sys.stdout.write(letter)
         sys.stdout.flush()
         if voice_file is not None:
+            # plays the voice_file if it was provided
             wave_obj.play()
         if letter in set('.?!'):
             time.sleep(period*speed_factor)
@@ -200,7 +207,6 @@ def text_scroll(text, period=0.25, comma=0.15, normal=0.03, space=None, voice_fi
             time.sleep(space*speed_factor)
         else:
             time.sleep(normal*speed_factor)
-        
 
 def quicktime_bar(key, speed_factor=0):
     percent = 0
@@ -269,9 +275,15 @@ def add_item(item_object, silent=False):
             text_scroll(f'\nYour inventory is full.\n')
 
 def game_over():
+    '''Stops the program.'''
     sys.exit()
 
 def gain_xp(enemy, silent=False):
+    '''Gives xp to the player.
+    If enemy is an enemy dict xp will automatically be derived from the enemy's stats
+    If enemy is an int the value of int will be given to the player
+    silent determines if a message is printed or not (this is recommended to be True if a large amount of xp is being given)
+    '''
     stat_mod = player['level'] // 5 + 1
     if type(enemy) != int:
         xp_gain = enemy["max_health"] + enemy["attack"] + enemy["defense"] + enemy["speed"] + enemy["bonus_xp"]
@@ -292,7 +304,7 @@ def gain_xp(enemy, silent=False):
             text_scroll(f'\nYou gained {xp_gain} XP! You need {player["xp_to_next"] - player["xp"]} more XP to level up!\n')
 
 def check_win_conditions(enemy):
-    # returns True when a win condition is met
+    '''returns True when a win condition is met'''
     if enemy['give_up'][0] >= 100: # enemy gives up peacefully
         text_scroll(f"\n{enemy['give_up'][1]}\n")
         gain_xp(enemy)
@@ -309,8 +321,10 @@ def check_win_conditions(enemy):
         return True
     return False
 
-def check_positive(dict, key, index=0):
-    if type(dict[key]) == list:
+def check_positive(dict: dict, key: str, index=0):
+    '''Will set value of an element/item to 0 if it is less than 0
+    index is only used if the item at key in dict is a list or tuple'''
+    if type(dict[key]) in (list, tuple):
         if dict[key][index] < 0:
             dict[key][index] = 0
     else:
@@ -318,11 +332,16 @@ def check_positive(dict, key, index=0):
             dict[key] = 0
 
 def varied_response(response1, response2, pause=0.5):
+    '''Text scrolls 2 messages with pause seconds in between'''
     text_scroll(f'\n{response1}\n')
     time.sleep(pause)
     text_scroll(f'\n{response2}\n')
 
-def stat_change(entity, stat, value, silent=False):
+def stat_change(entity: dict, stat: str, value: int, silent=False):
+    '''Changes the provided numerical stat of an enemy/player dict by value
+    This automatically does not allow for stats to become negative
+    silent determines whether or not a message is scrolled
+    '''
     entity[stat] += value
     if entity[stat] < 0: 
         entity[stat] = 0
