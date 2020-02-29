@@ -55,3 +55,6 @@ CHANGELOG ONLY RECORDS CHANGES MADE POST 1/3/2020
             # added default value for key ('f')
         All
             # added comments and doctrings
+    Other:
+        .gitignore
+            # finally got it to ignore files
