@@ -15,9 +15,9 @@ def ana_bomb(target: dict):
     '''
     if target["speed"] > 0:
         target["speed"] = 0
-        text_scroll(f'\n{entity["name"]} was anaesthetized! Their SPEED is now 0!\n')
+        text_scroll(f'\n{target["name"]} was anaesthetized! Their SPEED is now 0!\n')
     else:
-        text_scroll(f'\n{entity["name"]} was too slow for the anaesthesia to take effect!\n')
+        text_scroll(f'\n{target["name"]} was too slow for the anaesthesia to take effect!\n')
 
 def turn_based_damage(target: dict, user: dict, turn_number: int, damage_factor: float, dodgable: bool):
     '''Attack that bases its damage on the current turn. params=[target, user, '$turns', damage_factor, dodgable]'''
