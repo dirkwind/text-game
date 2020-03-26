@@ -8,6 +8,7 @@ import time
 import shelve # used for saving data
 import progbar.progbar as progbar # quicktime event visualizer
 import simpleaudio as sa
+import enum
 
 class Item(object):
 
@@ -105,17 +106,17 @@ class Enemy_Item(Item):
                     attack = base_attack + round(base_attack*0.25)
 
                 if attack != 0:
-                    damage = attack - (player['defense'] + bonus_def)
+                    damage = attack - (player.defense + bonus_def)
                     if damage < 0: damage = 0
-                    player['health'] -= damage
+                    player.health -= damage
                     text_scroll(f'\nYou were hit for {damage} damage! You are now at {player["health"]} HP!\n')
                 else:
                     text_scroll(f'\nThe {self.name.upper()} missed!\n')
 
             else: # if it is impossible for the player to dodge the item
-                damage = self.value - (player['defense'] + bonus_def)
+                damage = self.value - (player.defense + bonus_def)
                 if damage < 0: damage = 0
-                player['health'] -= damage
+                player.health -= damage
                 text_scroll(f'\nYou couldn\'t avoid the {self.name.upper()}!\n')
                 text_scroll(f'\nYou were hit for {damage} damage! You are now at {player["health"]} HP!\n')
         
@@ -156,9 +157,9 @@ class Player_Item(Item):
             text_scroll(f'\nYou used {self.name.upper()}!\n')
 
         if self.purpose == 'heal':
-            player['health'] += self.value
-            if player['health'] > player['max_health']:
-                player['health'] = player['max_health']
+            player.health += self.value
+            if player.health > player.max_health:
+                player.health = player.max_health
                 if not self.silent: text_scroll(f'\nYou are now at MAX HP!\n')
             else:
                 if not self.silent: text_scroll(f'\nYou gained {self.value} HP!\n')
@@ -179,6 +180,40 @@ class Player_Item(Item):
                 
         elif self.purpose == 'special':
             return self.special_func(*configure_params(self.special_params, enemy, current_turn))
+
+class Entity(object):
+    def __getitem__(self, item):
+        '''Allows for dictionary-style getting of values
+        e.g. entity['health'] will still work'''
+        return getattr(self, item)
+    
+    def __setitem__(self, item, value):
+        '''Allows for dictionary-style setting of values
+        e.g. entity['health'] = 100 will still work'''
+        setattr(self, item, value)
+
+class Player(Entity):
+
+    def __init__(self, name):
+        self.name = name
+        self.attack = 15
+        self.defense = 5
+        self.health = 40
+        self.max_health = 40
+        self.base_attack = 15
+        self.base_defense = 5
+        self.xp = 0
+        self.xp_to_next = 40
+        self.level = 0
+        self.killed = 0
+        self.spared = 0
+        self.fled = 0
+        self.inventory = [
+            #purposes are 'heal', 'stat_change', 'damage', 'special'
+            Player_Item('Bandage', 'heal', 10, 2),
+            Player_Item('Energy Drink', 'stat_change', 10, 3, changed_stat='attack', turns=3),
+            Player_Item('Frail Shield', 'stat_change', 10, 2, changed_stat='defense', turns=3)
+        ]
 
 def text_scroll(text: str, period=0.25, comma=0.15, normal=0.03, space=None, voice_file=None, speed_factor=1):
     '''Progressively prints text to the screen instead of printing it all at once.
@@ -230,7 +265,7 @@ def player_attacked(enemy: dict, bonus_def):
     '''
     text_scroll("\nGet ready to dodge!\n")
     base_attack = enemy['attack']
-    defense = player['defense']
+    defense = player.defense
     time.sleep(1)
     difference = quicktime_bar('f', enemy['speed'])
     if difference == 0:
@@ -251,7 +286,7 @@ def player_attacked(enemy: dict, bonus_def):
     if attack != 0:
         damage = attack - (defense + bonus_def)
         if damage < 0: damage = 0
-        player['health'] -= damage
+        player.health -= damage
         text_scroll(f'\nYou were hit for {damage} damage! You are now at {player["health"]} HP!\n')
     else:
         text_scroll(f'\n{enemy["name"]} missed!\n')
@@ -268,10 +303,10 @@ def add_item(item_object, silent=False):
     if (item_object.name, item_object.purpose) in existing_items:
         for i, item in enumerate(existing_items):
             if item == (item_object.name, item_object.purpose):
-                player['inventory'][i].uses += item_object.uses
+                player.inventory[i].uses += item_object.uses
                 break
-    elif len(player['inventory']) < 8:
-        player['inventory'].append(item_object)
+    elif len(player.inventory) < 8:
+        player.inventory.append(item_object)
         if not silent:
             text_scroll(f'\n{item_object.name.upper()} has been added to your inventory!\n')
     else:
@@ -288,40 +323,40 @@ def gain_xp(enemy, silent=False):
     If enemy is an int the value of int will be given to the player
     silent determines if a message is printed or not (this is recommended to be True if a large amount of xp is being given)
     '''
-    stat_mod = player['level'] // 5 + 1
+    stat_mod = player.level // 5 + 1
     if type(enemy) != int:
         xp_gain = enemy["max_health"] + enemy["attack"] + enemy["defense"] + enemy["speed"] + enemy["bonus_xp"]
     else:
         xp_gain = enemy
-    player['xp'] += xp_gain
-    while player['xp'] >= player['xp_to_next']: 
-        player['level'] += 1
+    player.xp += xp_gain
+    while player.xp >= player.xp_to_next: 
+        player.level += 1
         for stat in ['attack', 'defense']:
             player[stat] += 2 * stat_mod
-        player['max_health'] += 7 * stat_mod
-        player['health'] = player['max_health']
-        player['xp_to_next'] = round(player['xp_to_next'] * 1.8)
+        player.max_health += 7 * stat_mod
+        player.health = player.max_health
+        player.xp_to_next = round(player.xp_to_next * 1.8)
         if not silent:
-            text_scroll(f'\nYou LEVELED UP to LEVEL {player["level"]}!\n')
+            text_scroll(f'\nYou LEVELED UP to LEVEL {player.level}!\n')
     else:
         if not silent:
-            text_scroll(f'\nYou gained {xp_gain} XP! You need {player["xp_to_next"] - player["xp"]} more XP to level up!\n')
+            text_scroll(f'\nYou gained {xp_gain} XP! You need {player.xp_to_next - player.xp} more XP to level up!\n')
 
 def check_win_conditions(enemy):
     '''returns True when a win condition is met'''
     if enemy['give_up'][0] >= 100: # enemy gives up peacefully
         text_scroll(f"\n{enemy['give_up'][1]}\n")
         gain_xp(enemy)
-        player['spared'] += 1
+        player.spared += 1
         return True
-    if player['health'] <= 0: # player dies
+    if player.health <= 0: # player dies
         text_scroll(f'\n{enemy["name"]} has defeated you...\n')
         game_over()
         return True
     if enemy['health'] <= 0: # player kills enemy
         text_scroll(f'\n{enemy["name"]} has fallen... You Win!\n')
         gain_xp(enemy)
-        player['killed'] += 1
+        player.killed += 1
         return True
     return False
 
@@ -399,14 +434,14 @@ def battle(enemy: dict):
         
 
         #choices are below
-        print(f'\nYOUR HP: {player["health"]}')
+        print(f'\nYOUR HP: {player.health}')
         text_scroll('Would you like to 1) ATTACK, 2) ITEM, 3) ACT, or 4) RUN?\n\nYour choice: ')
         choice = str(input(''))
 
         # ------------- CHOICE 1: ATTACK -------------
 
         if choice == '1':
-            base_attack = player['attack']
+            base_attack = player.attack
             defense = enemy['defense']
             difference = quicktime_bar('f')
             if difference == 0:
@@ -437,7 +472,7 @@ def battle(enemy: dict):
         # ------------- CHOICE 2: ITEM -------------    
 
         elif choice == '2':
-            inventory = player['inventory']
+            inventory = player.inventory
             if len(inventory) == 0:
                 text_scroll('\nYou have no ITEMS!\n')
                 attack = False
@@ -512,8 +547,8 @@ def battle(enemy: dict):
         elif choice == '4':
             if enemy['can_flee']:
                 text_scroll(f'\nIt appears that {enemy_name} was too much for you...\n')
-                player['spared'] += 1
-                player['fled'] += 1
+                player.spared += 1
+                player.fled += 1
                 return None
             else:
                 text_scroll(f'\nYou can\'t run away from {enemy_name}...\n')
@@ -573,28 +608,10 @@ def battle(enemy: dict):
             else:
                 player_attacked(enemy, bonus_def)
 
-player = {
-    'name': "Bigg_Milk",
-    'attack': 15,
-    'defense': 5,
-    'health': 40,
-    'max_health': 40,
-    'base_attack': 15,
-    'base_defense': 5,
-    'xp': 0,
-    'xp_to_next': 40,
-    'level': 0,
-    'killed': 0,
-    'spared': 0,
-    'fled': 0,
-    'inventory': [
-        #purposes are 'heal', 'stat_change', 'damage', 'special'
-        Player_Item('Bandage', 'heal', 10, 2),
-        Player_Item('Energy Drink', 'stat_change', 10, 3, changed_stat='attack', turns=3),
-        Player_Item('Frail Shield', 'stat_change', 10, 2, changed_stat='defense', turns=3)
 
-    ]
-}
+
+
+player = Player("Bigg_Milk")
 
 def save(stage):
     '''Saves player data and provided stage into a shelve file.'''

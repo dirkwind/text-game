@@ -62,3 +62,11 @@ CHANGELOG ONLY RECORDS CHANGES MADE POST 1/3/2020
     Functions:
         ana_bomb
             # fixed unused variable error
+    Entities:
+        Player:
+            # added player class
+            # changed most player value calls to class format (player['health'] --> player.health)
+        Entity:
+            # added Entity class
+            # added __getitem__ and __setitem__ methods
+                - dict value call format (e.g. player['health']) still works for getting and setting values within entity subclasses
