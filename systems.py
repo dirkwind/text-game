@@ -8,7 +8,6 @@ import time
 import shelve # used for saving data
 import progbar.progbar as progbar # quicktime event visualizer
 import simpleaudio as sa
-import enum
 
 class Item(object):
 
