@@ -33,6 +33,35 @@ class Item(object):
             self.special_func = unique_args['special_func']
             self.special_params = unique_args['special_params']
 
+    @classmethod
+    def stat_change(cls, name: str, value: int, uses: int, turns: int, changed_stat: str, silent=False):
+        '''Creates an enemy stat_change item
+        changed_stat is the name of the stat being changed
+        '''
+        return cls(name, "stat_change", value, uses, silent, turns=turns, changed_stat=changed_stat)
+    
+    @classmethod
+    def heal(cls, name: str, health: int, uses: int, silent=False):
+        '''Creates an enemy heal item
+        health is the change to the enemy/player's health
+        '''
+        return cls(name, "heal", health, uses, silent)
+    
+    @classmethod
+    def damage(cls, name: str, damage: int, uses: int, dodgable=True, silent=False):
+        '''Creates an enemy damage item
+        damage is the damage being done
+        '''
+        return cls(name, "damage", damage, uses, silent, dodgable=dodgable)
+    
+    @classmethod
+    def special(cls, name: str, uses: int, function, params: list, silent=False):
+        '''Creates an enemy damage item
+        function is the function that will be used when the item is used
+        params will be the parameters for that function. the format for using outside variables as params is '$variable_name' (e.g. ['$enemy', '$player', 3])
+        '''
+        return cls(name, "special", None, uses, silent, special_func=function, special_params=params)
+
 class Enemy_Item(Item):
     
     active_items = []
@@ -466,7 +495,7 @@ def battle(enemy: dict):
             else:
                 text_scroll('\nYou missed...\n')
             
-            turns += 1
+
             
         # ------------- CHOICE 2: ITEM -------------    
 
@@ -535,11 +564,9 @@ def battle(enemy: dict):
                 else:
                     text_scroll(f'\n{enemy["checkable"][1]}\n') # prints reason why enemy can't be checked
             else:
-                turns -= 1
                 attack = False
             if len(random_response) >= 3: # changes a stat if there are enough parameters for it
                 stat_change(enemy, random_response[2], random_response[3])
-            turns += 1
         
         # ------------- CHOICE 4: RUN -------------
 
@@ -559,11 +586,11 @@ def battle(enemy: dict):
         if check_win_conditions(enemy):
             return None
 
-        Player_Item.check_active(turns)
+        
 
          # ------------- ENEMY ACTION -------------
 
-        Enemy_Item.check_active(turns, enemy)
+        
 
         if attack:
             # number that determines whether or not the enemy will use an item
@@ -606,7 +633,11 @@ def battle(enemy: dict):
             
             else:
                 player_attacked(enemy, bonus_def)
+            
+            turns += 1
 
+            Player_Item.check_active(turns)
+            Enemy_Item.check_active(turns, enemy)
 
 
 
