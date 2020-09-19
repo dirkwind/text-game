@@ -70,3 +70,14 @@ CHANGELOG ONLY RECORDS CHANGES MADE POST 1/3/2020
             # added Entity class
             # added __getitem__ and __setitem__ methods
                 - dict value call format (e.g. player['health']) still works for getting and setting values within entity subclasses
+9/19/2020:
+    Items:
+        Item superclass:
+            # added special, heal, damage, and stat_change classmethods
+                - makes creating with each pupose easier
+    Story:
+        Enemies:
+            # fixed a typo in the doge (raptor) enemy
+            # changed 'Hamburger' Item to use new method of creating items
+        Other:
+            # changed 'Sketchy Throwing Knife' Player_Item creation to new method
