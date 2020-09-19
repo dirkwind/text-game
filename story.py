@@ -75,7 +75,7 @@ dog = {
             (['You carress his massive stomach.', '"Giggity giggity goo!"'], 30)
             ],
         'indulge': [
-            (['You read mange with the foul creature.', 'Mmm...'], 100)
+            (['You read manga with the foul creature.', 'Mmm...'], 100)
             ]
     }
 }
@@ -94,7 +94,8 @@ doge = {
     'can_flee': True,
     'bonus_xp': 0, # extra xp for the player if they defeat this enemy
     'inventory': [ # Enemy_Item(self, name, purpose='heal, stat_bonus, damage', value, uses, usage_chance, dodgable=None, turns=0) 
-        Enemy_Item('Hamburger', 'stat_change', 10, 1, turns=3, changed_stat='attack')
+        #Enemy_Item('Hamburger', 'stat_change', 10, 1, turns=3, changed_stat='attack')
+        Enemy_Item.stat_change("Hamburger", 10, 1, 3, 'attack')
     ],
     'use_item_chance': 5, # between and including 1 through 100; percentage chance (w/ precision of 3 decimal places) that the enemy will use an item
     'responses': { # use (['', ''], 0, stat, value) to change a stat's value when an act is performed
@@ -115,7 +116,7 @@ doge = {
 
 #add_item(Player_Item('Anaesthetic Bomb', 'special', None, 2, special_func=ana_bomb, special_params=['$enemy', 1]))
 #add_item(Player_Item('Effect Longevity Boost', 'special', None, 3, special_func=change_turns, special_params=['$turns', -4, '&turns']))
-add_item(Player_Item('Sketchy Throwing Knife', 'special', None, 3, special_func=vampire, special_params=['$enemy', '$player', 3]))
+add_item(Player_Item.special('Sketchy Throwing Knife', 3, vampire, ['$enemy', '$player', 3]))
 #add_item(Player_Item('Charge Attack', 'special', None, 2, special_func=turn_based_damage, special_params=['$enemy', '$turns', 0.45, True]))
 
 battle(doge)
