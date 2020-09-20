@@ -243,6 +243,52 @@ class Player(Entity):
             Player_Item('Frail Shield', 'stat_change', 10, 2, changed_stat='defense', turns=3)
         ]
 
+class Enemy(Entity):
+
+    def __init__(self, name: str,
+        intro: str,
+        description: str,
+        checkable: list,
+        attack: int,
+        defense: int,
+        speed: int,
+        health: int,
+        max_health: int,
+        give_up: list,
+        can_flee: bool,
+        bonus_xp: int,
+        inventory: list,
+        use_item_chance: float,
+        responses: list):
+        """use Enemy.help() for help"""
+        self.name = name
+        self.intro = intro
+        self.description = description
+        self.checkable = checkable
+        self.attack = attack
+        self.defense = defense
+        self.speed = speed
+        self.health = health
+        self.max_health = max_health
+        self.give_up = give_up
+        self.can_flee = can_flee
+        self.bonus_xp = bonus_xp
+        self.inventory = inventory
+        self.use_item_chance = use_item_chance
+        self.responses = responses
+
+    @classmethod
+    def from_dict(cls, enemy_dict: dict):
+        result = cls(*enemy_dict.values())
+        for attribute, value in enemy_dict.items():
+            # ensures that each value is set correctly in case the enemy_dict was ordered differently than class initiallization
+            result[attribute] = value
+
+    @staticmethod
+    def help():
+        with open("./enemy_format.txt", 'r') as enemy_format:
+            print("\n" + enemy_format.read())
+
 def text_scroll(text: str, period=0.25, comma=0.15, normal=0.03, space=None, voice_file=None, speed_factor=1):
     '''Progressively prints text to the screen instead of printing it all at once.
     \n\n* The float values of period, comma, normal, and space is the duration in seconds the program pauses after printing a character.
@@ -436,7 +482,7 @@ def configure_params(params, enemy, turns, silent=False):
 
 # ---------------------------------------- BATTLE ----------------------------------------
 
-def battle(enemy: dict):
+def battle(enemy: dict or Enemy):
     '''Initiates a battle between player and the provided enemy.'''
     in_battle = True
     responses = enemy['responses']
