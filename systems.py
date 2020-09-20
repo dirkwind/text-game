@@ -293,7 +293,7 @@ class Enemy(Entity):
         else:
             text_scroll('\nYou missed...\n')
     
-    def add_item(self, item_object, silent=True):
+    def add_item(self, item_object: Enemy_Item, silent=True):
         '''Help for Enemy_Item class initiallization:
         purpose is 'stat_change', 'heal', 'damage', or 'special'
         use dodgable=[True/False] if purpose = 'damage'
@@ -366,7 +366,7 @@ class Player(Entity):
             text_scroll(f'\n{enemy["name"]} missed!\n')
             time.sleep(0.5)
     
-    def add_item(self, item_object, silent=False):
+    def add_item(self, item_object: Player_Item, silent=False):
         '''Help for Player_Item class initiallization:
         purpose is 'stat_change', 'heal', 'damage', or 'special'
         use dodgable=[True/False] if purpose = 'damage'
@@ -374,7 +374,7 @@ class Player(Entity):
         use special_func=[function] and special_params=[function_params: list/tuple] if purpose = 'special'
         '''
         existing_items = [(itm.name, itm.purpose, itm.value) for itm in self.inventory]
-        if (item_object.name, item_object.purpose, itm.value) in existing_items:
+        if (item_object.name, item_object.purpose, item_object.value) in existing_items:
             for i, item in enumerate(existing_items):
                 if item == (item_object.name, item_object.purpose):
                     self.inventory[i].uses += item_object.uses
