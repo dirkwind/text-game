@@ -7,7 +7,7 @@ from time import *
 
 # check enemy_format.txt for enemy formatting info
 
-dog = {
+dog = Enemy.from_dict({
     'name': 'Gremlin',
     'intro': 'You\'ve encontered a Gremlin!', # intro message
     'description': 'A fat couch potato.', # short description of enemy
@@ -39,9 +39,9 @@ dog = {
             (['You read manga with the foul creature.', 'Mmm...'], 100)
             ]
     }
-}
+})
 
-doge = {
+doge = Enemy.from_dict({
     'name': 'Raptor',
     'intro': '"rawr"', # intro message
     'description': 'Just a velociraptor.', # short description of enemy
@@ -74,9 +74,7 @@ doge = {
             ]
     }
 }
-
-doge = Enemy.from_dict(doge)
-
+)
 print(doge.inventory)
 
 #add_item(Player_Item('Anaesthetic Bomb', 'special', None, 2, special_func=ana_bomb, special_params=['$enemy', 1]))

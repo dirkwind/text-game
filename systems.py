@@ -283,11 +283,38 @@ class Enemy(Entity):
         for attribute, value in enemy_dict.items():
             # ensures that each value is set correctly in case the enemy_dict was ordered differently than class initiallization
             result[attribute] = value
+        return result
 
     @staticmethod
     def help():
         with open("./enemy_format.txt", 'r') as enemy_format:
             print("\n" + enemy_format.read())
+
+    def attacked(self, player, bonus_damage):
+        base_attack = player.attack
+        difference = quicktime_bar('f')
+        if difference == 0:
+            print('Critical!\t')
+            base_damage = base_attack + round(base_attack*0.2)
+        elif difference + self.speed <= 3:
+            print('Great Hit!\t')
+            base_damage = base_attack
+        elif difference + self.speed <= 7:
+            print('Good Hit!\t')
+            base_damage = base_attack - math.ceil(base_attack*0.2)
+        elif difference + self.speed <= 12:
+            print('Fair Hit!\t')
+            base_damage = base_attack - math.ceil(base_attack*0.5)
+        else:
+            print('Miss!\t\t')
+            base_damage = 0
+        if base_damage > 0:
+            damage = (base_damage + bonus_damage) - self.defense
+            if damage < 0: damage = 0
+            self.health -= damage
+            text_scroll(f'\nYou hit {self.name} for {damage} damage! {self.name} is now at {self.health} HP!\n')
+        else:
+            text_scroll('\nYou missed...\n')
 
 def text_scroll(text: str, period=0.25, comma=0.15, normal=0.03, space=None, voice_file=None, speed_factor=1):
     '''Progressively prints text to the screen instead of printing it all at once.
@@ -482,7 +509,7 @@ def configure_params(params, enemy, turns, silent=False):
 
 # ---------------------------------------- BATTLE ----------------------------------------
 
-def battle(enemy: dict or Enemy):
+def battle(enemy: Enemy):
     '''Initiates a battle between player and the provided enemy.'''
     in_battle = True
     responses = enemy['responses']
@@ -515,32 +542,7 @@ def battle(enemy: dict or Enemy):
         # ------------- CHOICE 1: ATTACK -------------
 
         if choice == '1':
-            base_attack = player.attack
-            defense = enemy['defense']
-            difference = quicktime_bar('f')
-            if difference == 0:
-                print('Critical!\t')
-                base_damage = base_attack + round(base_attack*0.2)
-            elif difference + enemy['speed'] <= 3:
-                print('Great Hit!\t')
-                base_damage = base_attack
-            elif difference + enemy['speed'] <= 7:
-                print('Good Hit!\t')
-                base_damage = base_attack - math.ceil(base_attack*0.2)
-            elif difference + enemy['speed'] <= 12:
-                print('Fair Hit!\t')
-                base_damage = base_attack - math.ceil(base_attack*0.5)
-            else:
-                print('Miss!\t\t')
-                base_damage = 0
-            if base_damage > 0:
-                damage = (base_damage + bonus_damage) - defense
-                if damage < 0: damage = 0
-                enemy['health'] -= damage
-                text_scroll(f'\nYou hit {enemy_name} for {damage} damage! {enemy_name} is now at {enemy["health"]} HP!\n')
-            else:
-                text_scroll('\nYou missed...\n')
-            
+            enemy.attacked(player, bonus_damage)
 
             
         # ------------- CHOICE 2: ITEM -------------    
