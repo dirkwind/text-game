@@ -77,9 +77,9 @@ doge = Enemy.from_dict({
 )
 print(doge.inventory)
 
-#add_item(Player_Item('Anaesthetic Bomb', 'special', None, 2, special_func=ana_bomb, special_params=['$enemy', 1]))
-#add_item(Player_Item('Effect Longevity Boost', 'special', None, 3, special_func=change_turns, special_params=['$turns', -4, '&turns']))
-add_item(Player_Item.special('Sketchy Throwing Knife', 3, vampire, ['$enemy', '$player', 3]))
-#add_item(Player_Item('Charge Attack', 'special', None, 2, special_func=turn_based_damage, special_params=['$enemy', '$turns', 0.45, True]))
+#Player.add_item(Player_Item('Anaesthetic Bomb', 'special', None, 2, special_func=ana_bomb, special_params=['$enemy', 1]))
+#Player.add_item(Player_Item('Effect Longevity Boost', 'special', None, 3, special_func=change_turns, special_params=['$turns', -4, '&turns']))
+Player.add_item(Player_Item.special('Sketchy Throwing Knife', 3, vampire, ['$enemy', '$player', 3]))
+#Player.add_item(Player_Item('Charge Attack', 'special', None, 2, special_func=turn_based_damage, special_params=['$enemy', '$turns', 0.45, True]))
 
 battle(doge)

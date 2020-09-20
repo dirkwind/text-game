@@ -292,6 +292,24 @@ class Enemy(Entity):
             text_scroll(f'\nYou hit {self.name} for {damage} damage! {self.name} is now at {self.health} HP!\n')
         else:
             text_scroll('\nYou missed...\n')
+    
+    def add_item(self, item_object, silent=True):
+        '''Help for Enemy_Item class initiallization:
+        purpose is 'stat_change', 'heal', 'damage', or 'special'
+        use dodgable=[True/False] if purpose = 'damage'
+        use turns=[num_of_turns: int] and changed_stat=[stat_name: str] if purpose = 'stat_change'
+        use special_func=[function] and special_params=[function_params: list/tuple] if purpose = 'special'
+        '''
+        existing_items = [(itm.name, itm.purpose, itm.value) for itm in self.inventory]
+        if (item_object.name, item_object.purpose, item_object.value) in existing_items:
+            for i, item in enumerate(existing_items):
+                if item == (item_object.name, item_object.purpose):
+                    self.inventory[i].uses += item_object.uses
+                    break
+        elif len(self.inventory) < 8:
+            self.inventory.append(item_object)
+            if not silent:
+                text_scroll(f'\n{item_object.name.upper()} has been picked up by {self.name}!\n')
 
 class Player(Entity):
 
@@ -347,6 +365,27 @@ class Player(Entity):
         else:
             text_scroll(f'\n{enemy["name"]} missed!\n')
             time.sleep(0.5)
+    
+    def add_item(self, item_object, silent=False):
+        '''Help for Player_Item class initiallization:
+        purpose is 'stat_change', 'heal', 'damage', or 'special'
+        use dodgable=[True/False] if purpose = 'damage'
+        use turns=[num_of_turns: int] and changed_stat=[stat_name: str] if purpose = 'stat_change'
+        use special_func=[function] and special_params=[function_params: list/tuple] if purpose = 'special'
+        '''
+        existing_items = [(itm.name, itm.purpose, itm.value) for itm in self.inventory]
+        if (item_object.name, item_object.purpose, itm.value) in existing_items:
+            for i, item in enumerate(existing_items):
+                if item == (item_object.name, item_object.purpose):
+                    self.inventory[i].uses += item_object.uses
+                    break
+        elif len(self.inventory) < 8:
+            self.inventory.append(item_object)
+            if not silent:
+                text_scroll(f'\n{item_object.name.upper()} has been added to your inventory!\n')
+        else:
+            if not silent:
+                text_scroll(f'\nYour inventory is full.\n')
 
 def text_scroll(text: str, period=0.25, comma=0.15, normal=0.03, space=None, voice_file=None, speed_factor=1):
     '''Progressively prints text to the screen instead of printing it all at once.
@@ -392,27 +431,6 @@ def quicktime_bar(key='f', speed_factor=0):
                 break
     attack_bar.pauseProgress()
     return abs(percent - 30)
-
-def add_item(item_object, silent=False):
-    '''Help for Player_Item class initiallization:
-    purpose is 'stat_change', 'heal', 'damage', or 'special'
-    use dodgable=[True/False] if purpose = 'damage'
-    use turns=[num_of_turns: int] and changed_stat=[stat_name: str] if purpose = 'stat_change'
-    use special_func=[function] and special_params=[function_params: list/tuple] if purpose = 'special'
-    '''
-    existing_items = [(itm.name, itm.purpose) for itm in player['inventory']]
-    if (item_object.name, item_object.purpose) in existing_items:
-        for i, item in enumerate(existing_items):
-            if item == (item_object.name, item_object.purpose):
-                player.inventory[i].uses += item_object.uses
-                break
-    elif len(player.inventory) < 8:
-        player.inventory.append(item_object)
-        if not silent:
-            text_scroll(f'\n{item_object.name.upper()} has been added to your inventory!\n')
-    else:
-        if not silent:
-            text_scroll(f'\nYour inventory is full.\n')
 
 def game_over():
     '''Stops the program.'''
