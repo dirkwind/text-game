@@ -220,29 +220,6 @@ class Entity(object):
         e.g. entity['health'] = 100 will still work'''
         setattr(self, item, value)
 
-class Player(Entity):
-
-    def __init__(self, name):
-        self.name = name
-        self.attack = 15
-        self.defense = 5
-        self.health = 40
-        self.max_health = 40
-        self.base_attack = 15
-        self.base_defense = 5
-        self.xp = 0
-        self.xp_to_next = 40
-        self.level = 0
-        self.killed = 0
-        self.spared = 0
-        self.fled = 0
-        self.inventory = [
-            #purposes are 'heal', 'stat_change', 'damage', 'special'
-            Player_Item('Bandage', 'heal', 10, 2),
-            Player_Item('Energy Drink', 'stat_change', 10, 3, changed_stat='attack', turns=3),
-            Player_Item('Frail Shield', 'stat_change', 10, 2, changed_stat='defense', turns=3)
-        ]
-
 class Enemy(Entity):
 
     def __init__(self, name: str,
@@ -316,6 +293,61 @@ class Enemy(Entity):
         else:
             text_scroll('\nYou missed...\n')
 
+class Player(Entity):
+
+    def __init__(self, name):
+        self.name = name
+        self.attack = 15
+        self.defense = 5
+        self.health = 40
+        self.max_health = 40
+        self.base_attack = 15
+        self.base_defense = 5
+        self.xp = 0
+        self.xp_to_next = 40
+        self.level = 0
+        self.killed = 0
+        self.spared = 0
+        self.fled = 0
+        self.inventory = [
+            #purposes are 'heal', 'stat_change', 'damage', 'special'
+            Player_Item('Bandage', 'heal', 10, 2),
+            Player_Item('Energy Drink', 'stat_change', 10, 3, changed_stat='attack', turns=3),
+            Player_Item('Frail Shield', 'stat_change', 10, 2, changed_stat='defense', turns=3)
+        ]
+    
+    def attacked(self, enemy: Enemy, bonus_def: int):
+        '''Prompts the player to try and dodge the enemy's attack.
+        enemy is the enemy dict and bonus_def is extra def the player has
+        '''
+        text_scroll("\nGet ready to dodge!\n")
+        base_attack = enemy['attack']
+        time.sleep(1)
+        difference = quicktime_bar('f', enemy['speed'])
+        if difference == 0:
+            print('Dodged!')
+            attack = 0
+        elif difference <=2:
+            print('Grazed!')
+            attack = base_attack - math.floor(base_attack*0.4)
+        elif difference <= 5:
+            print('Hit!')
+            attack = base_attack - math.floor(base_attack*0.1)
+        elif difference <= 15:
+            print('Solid Hit!')
+            attack = base_attack
+        else:
+            print('Critical!')
+            attack = base_attack + round(base_attack*0.2)
+        if attack != 0:
+            damage = attack - (self.defense + bonus_def)
+            if damage < 0: damage = 0
+            self.health -= damage
+            text_scroll(f'\nYou were hit for {damage} damage! You are now at {self.health} HP!\n')
+        else:
+            text_scroll(f'\n{enemy["name"]} missed!\n')
+            time.sleep(0.5)
+
 def text_scroll(text: str, period=0.25, comma=0.15, normal=0.03, space=None, voice_file=None, speed_factor=1):
     '''Progressively prints text to the screen instead of printing it all at once.
     \n\n* The float values of period, comma, normal, and space is the duration in seconds the program pauses after printing a character.
@@ -344,6 +376,7 @@ def text_scroll(text: str, period=0.25, comma=0.15, normal=0.03, space=None, voi
         else:
             time.sleep(normal*speed_factor)
 
+
 def quicktime_bar(key='f', speed_factor=0):
     '''Starts a quicktime bar event. Returns a value between 0 and 30.'''
     percent = 0
@@ -359,39 +392,6 @@ def quicktime_bar(key='f', speed_factor=0):
                 break
     attack_bar.pauseProgress()
     return abs(percent - 30)
-
-def player_attacked(enemy: dict, bonus_def):
-    '''Prompts the player to try and dodge the enemy's attack.
-    enemy is the enemy dict and bonus_def is extra def the player has
-    '''
-    text_scroll("\nGet ready to dodge!\n")
-    base_attack = enemy['attack']
-    defense = player.defense
-    time.sleep(1)
-    difference = quicktime_bar('f', enemy['speed'])
-    if difference == 0:
-        print('Dodged!')
-        attack = 0
-    elif difference <=2:
-        print('Grazed!')
-        attack = base_attack - math.floor(base_attack*0.4)
-    elif difference <= 5:
-        print('Hit!')
-        attack = base_attack - math.floor(base_attack*0.1)
-    elif difference <= 15:
-        print('Solid Hit!')
-        attack = base_attack
-    else:
-        print('Critical!')
-        attack = base_attack + round(base_attack*0.2)
-    if attack != 0:
-        damage = attack - (defense + bonus_def)
-        if damage < 0: damage = 0
-        player.health -= damage
-        text_scroll(f'\nYou were hit for {damage} damage! You are now at {player["health"]} HP!\n')
-    else:
-        text_scroll(f'\n{enemy["name"]} missed!\n')
-        time.sleep(0.5)
 
 def add_item(item_object, silent=False):
     '''Help for Player_Item class initiallization:
@@ -652,7 +652,7 @@ def battle(enemy: Enemy):
 
                     if not loop_count <= max_loops:
                         # this prevents this loop from becoming an infinite loop
-                        player_attacked(enemy, bonus_def)
+                        player.attacked(enemy, bonus_def)
                         break
 
                     item = random.choice(enemy['inventory'])
@@ -661,7 +661,7 @@ def battle(enemy: Enemy):
                         if len(enemy['inventory']) == 1:
                             # attack the player if the enemy only has a healing item and is at full health
                             choosing_item = False
-                            player_attacked(enemy, bonus_def)
+                            player.attacked(enemy, bonus_def)
                         else:
                             loop_count += 1
                             continue
@@ -680,7 +680,7 @@ def battle(enemy: Enemy):
                         choosing_item = False   
             
             else:
-                player_attacked(enemy, bonus_def)
+                player.attacked(enemy, bonus_def)
             
             turns += 1
 
