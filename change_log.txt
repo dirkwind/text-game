@@ -74,7 +74,18 @@ CHANGELOG ONLY RECORDS CHANGES MADE POST 1/3/2020
     Items:
         Item superclass:
             # added special, heal, damage, and stat_change classmethods
-                - makes creating with each pupose easier
+                - makes creating with each pupose easier/simpler
+    Entities:
+        Player:
+            # added add_item method
+                - replaces the add_item function. Adds an item to the player's inventory
+            # added attacked method
+                - replaces the player_attacked function, does the same thing 
+        Enemy:
+            # added add_item method
+                - replaces the add_item function. Adds an item to an enemy's inventory
+            # added attacked method
+                - replaces the contents of choice 1 in the battle function, does the same thing
     Story:
         Enemies:
             # fixed a typo in the doge (raptor) enemy
